@@ -19,7 +19,7 @@ fi
 # We only run this when it's not running on GitHub Actions
 if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     rm -rf kernel
-    git clone --depth=1 -b "$1" https://github.com/a3-Prjkt/kernel_xiaomi_ginkgo_consistenX kernel kernel
+    git clone --depth=1 -b "$1" git clone https://github.com/a3-Prjkt/kernel_xiaomi_ginkgo_consistenX kernel kernel
     cd kernel || exit
 fi
 

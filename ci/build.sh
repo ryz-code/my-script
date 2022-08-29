@@ -24,7 +24,7 @@ if [[ -z ${GITHUB_ACTIONS:-} ]]; then
 fi
 
 # Clone toolchain source
-if [[ "${TC}" == "clang" ]]; then
+if [[ "${TC}" == "--clang" ]]; then
     msg "* Clone Clang"
     git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
 fi
@@ -35,9 +35,8 @@ git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
 
 # Setup
 KERNEL_DIR="$PWD"
-KERNEL_IMG="$KERNEL_DIR/out/arch/arm64/boot/Image"
+KERNEL_IMG="$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb"
 KERNEL_DTBO="$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
-KERNEL_DTB="$KERNEL_DIR/out/arch/arm64/boot/dts/qcom/sm8150-v2.dtb"
 KERNEL_LOG="$KERNEL_DIR/out/log-$(TZ=Asia/Jakarta date +'%H%M').txt"
 AK3_DIR="$KERNEL_DIR/AK3"
 DEVICE="vayu"
@@ -47,26 +46,7 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Toolchain setup
-if [[ "$NEED_GCC" == "y" ]]; then
-    CLANG_DIR="$KERNEL_DIR/clang"
-    GCC64_DIR="$KERNEL_DIR/arm64"
-    GCC32_DIR="$KERNEL_DIR/arm32"
-    PrefixDir="$CLANG_DIR/bin/"
-    ARM64="aarch64-linux-android-"
-    ARM32="arm-linux-androideabi-"
-    TRIPLE="aarch64-linux-gnu-"
-    COMPILE="clang"
-    PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
-    KBUILD_COMPILER_STRING="$("${CLANG_DIR}"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-elif [[ "$GCC" == "y" ]]; then
-    GCC64_DIR="$KERNEL_DIR/arm64"
-    GCC32_DIR="$KERNEL_DIR/arm32"
-    ARM64="$GCC64_DIR/bin/aarch64-elf-"
-    ARM32="$GCC32_DIR/bin/arm-eabi-"
-    COMPILE="gcc"
-    PATH="$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
-    KBUILD_COMPILER_STRING="$("${GCC64_DIR}"/bin/aarch64-elf-gcc --version | head -n 1)"
-else
+fi
     CLANG_DIR="$KERNEL_DIR/clang"
     PrefixDir="$CLANG_DIR/bin/"
     ARM64="aarch64-linux-gnu-"

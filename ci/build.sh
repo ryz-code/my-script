@@ -24,10 +24,8 @@ if [[ -z ${GITHUB_ACTIONS:-} ]]; then
 fi
 
 # Clone toolchain source
-if [[ "${TC}" == "--clang" ]]; then
-    msg "* Clone Clang"
-    git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
-fi
+msg "* Clone Clang Source"
+git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
 
 # Clone AnyKernel3 source
 msg "* Clone AnyKernel3 source"

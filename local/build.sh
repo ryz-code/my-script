@@ -19,7 +19,7 @@ fi
 # We only run this when it's not running on GitHub Actions
 if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     rm -rf kernel
-    git clone --depth=1 -b "$1" https://github.com/fajar3109/kernel_xiaomi_ginkgo kernel
+    git clone --depth=1 -b "$1" https://github.com/a3-Prjkt/kernel_xiaomi_ginkgo_consistenX kernel
     cd kernel || exit
 fi
 
@@ -107,7 +107,7 @@ msg "* Start Compile kernel for $DEVICE using $CPU $CORES thread"
 start_msg
 
 if [[ "${COMPILE}" == "clang" ]]; then
-    make O=out "$DEVICE"_defconfig
+    make O=out "vendor/$DEVICE"-perf_defconfig
     make -j"$CORES" O=out \
         CC="${PrefixDir}"clang \
         LD="${PrefixDir}"ld.lld \
@@ -154,9 +154,10 @@ msg "* Total time elapsed: $(("TOTAL_TIME" / 60)) Minutes, $(("TOTAL_TIME" % 60)
 if [[ -f "$KERNEL_IMG" ]] || [[ -f "$KERNEL_DTBO" ]] || [[ -f "$KERNEL_DTB" ]]; then
     cp "$KERNEL_IMG" "$AK3_DIR"
     cp "$KERNEL_DTBO" "$AK3_DIR"
-    msg "* Copy Image, dtbo, successfully"
+	cp "$KERNEL_DTB" "$AK3_DIR/dtb.img"
+    msg "* Copy Image, dtbo, dtb successfully"
 else
-    err "* Copy Image, dtbo, failed!"
+    err "* Copy Image, dtbo, dtb failed!"
     exit
 fi
 

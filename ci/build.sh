@@ -44,7 +44,6 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Toolchain setup
-fi
     CLANG_DIR="$KERNEL_DIR/clang"
     PrefixDir="$CLANG_DIR/bin/"
     ARM64="aarch64-linux-gnu-"
@@ -53,7 +52,6 @@ fi
     COMPILE="clang"
     PATH="$CLANG_DIR/bin:$PATH"
     KBUILD_COMPILER_STRING="$("${CLANG_DIR}"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-fi
 
 # Export
 export TZ="Asia/Jakarta"

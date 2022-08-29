@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright ©2022 XSans02
+# Copyright ©2022 ryz-code
 
 # Function to show an informational message
 msg() {
@@ -19,7 +19,7 @@ fi
 # We only run this when it's not running on GitHub Actions
 if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     rm -rf kernel
-    git clone --depth=1 -b "$1" https://github.com/XSans0/kernel_xiaomi_vayu kernel
+    git clone --depth=1 -b twelve https://github.com/a3-Prjkt/kernel_xiaomi_ginkgo_consistenX kernel
     cd kernel || exit
 fi
 
@@ -28,71 +28,25 @@ msg "* Clone AnyKernel3 source"
 git clone --depth=1 -b master https://github.com/ryz-code/AnyKernel3 AK3
 
 # Clone toolchain source
-if [[ "${TC}" == "aosp15" ]]; then
-    msg "* Clone AOSP Clang 15.x"
-    AOSP_VER="r458507"
-    NEED_GCC=y
-    wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"${AOSP_VER}".tar.gz -O "aosp-clang.tar.gz"
-    mkdir clang && tar -xf aosp-clang.tar.gz -C clang && rm -rf aosp-clang.tar.gz
-    git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
-    git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
-elif [[ "${TC}" == "weebx" ]]; then
-    msg "* Clone WeebX Clang 16.x"
-    wget https://raw.githubusercontent.com/XSans0/WeebX-Clang/main/16.0.0-link.txt -O "link.txt"
-    wget "$(cat link.txt)" -O "weebx-clang.tar.gz"
-    mkdir clang && tar -xf weebx-clang.tar.gz -C clang && rm -rf weebx-clang.tar.gz link.txt
-elif [[ "${TC}" == "weebx15" ]]; then
+if [[ "${TC}" == "weebx15" ]]; then
     msg "* Clone WeebX Clang 15.x good revision"
     git clone --depth=1 -b release/15-gr --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
-elif [[ "${TC}" == "weebx14" ]]; then
-    msg "* Clone WeebX Clang 14.x"
-    git clone --depth=1 -b main --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
-elif [[ "${TC}" == "gcc13" ]]; then
-    msg "* Clone GCC 13.x"
-    GCC=y
-    git clone --depth=1 -b gcc-master https://github.com/mvaisakh/gcc-arm64.git arm64
-    git clone --depth=1 -b gcc-master https://github.com/mvaisakh/gcc-arm.git arm32
-elif [[ "${TC}" == "gcc12" ]]; then
-    msg "* Clone GCC 12.x"
-    GCC=y
-    git clone --depth=1 -b gcc-new https://github.com/mvaisakh/gcc-arm64.git arm64
-    git clone --depth=1 -b gcc-new https://github.com/mvaisakh/gcc-arm.git arm32
 fi
 
 # Setup
 KERNEL_DIR="$PWD"
 KERNEL_IMG="$KERNEL_DIR/out/arch/arm64/boot/Image"
 KERNEL_DTBO="$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
-KERNEL_DTB="$KERNEL_DIR/out/arch/arm64/boot/dts/qcom/sm8150-v2.dtb"
 KERNEL_LOG="$KERNEL_DIR/out/log-$(TZ=Asia/Jakarta date +'%H%M').txt"
 AK3_DIR="$KERNEL_DIR/AK3"
-DEVICE="vayu"
+DEVICE="ginkgo"
 CORES="$(nproc --all)"
 CPU="$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 COMMIT="$(git log --pretty=format:'%s' -1)"
 
 # Toolchain setup
-if [[ "$NEED_GCC" == "y" ]]; then
-    CLANG_DIR="$KERNEL_DIR/clang"
-    GCC64_DIR="$KERNEL_DIR/arm64"
-    GCC32_DIR="$KERNEL_DIR/arm32"
-    PrefixDir="$CLANG_DIR/bin/"
-    ARM64="aarch64-linux-android-"
-    ARM32="arm-linux-androideabi-"
-    TRIPLE="aarch64-linux-gnu-"
-    COMPILE="clang"
-    PATH="$CLANG_DIR/bin:$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
-    KBUILD_COMPILER_STRING="$("${CLANG_DIR}"/bin/clang --version | head -n 1 | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-elif [[ "$GCC" == "y" ]]; then
-    GCC64_DIR="$KERNEL_DIR/arm64"
-    GCC32_DIR="$KERNEL_DIR/arm32"
-    ARM64="$GCC64_DIR/bin/aarch64-elf-"
-    ARM32="$GCC32_DIR/bin/arm-eabi-"
-    COMPILE="gcc"
-    PATH="$GCC64_DIR/bin:$GCC32_DIR/bin:$PATH"
-    KBUILD_COMPILER_STRING="$("${GCC64_DIR}"/bin/aarch64-elf-gcc --version | head -n 1)"
-else
+if
     CLANG_DIR="$KERNEL_DIR/clang"
     PrefixDir="$CLANG_DIR/bin/"
     ARM64="aarch64-linux-gnu-"
@@ -180,20 +134,7 @@ if [[ "${COMPILE}" == "clang" ]]; then
         send_file "$KERNEL_LOG" "<b>Compile Kernel for $DEVICE failed, See buildlog to fix errors</b>"
         exit
     fi
-elif [[ "${COMPILE}" == "gcc" ]]; then
-    make O=out "$DEVICE"_defconfig
-    make -j"$CORES" O=out \
-        LD=ld.lld \
-        AR=llvm-ar \
-        NM=llvm-nm \
-        STRIP=llvm-strip \
-        OBJCOPY=llvm-objcopy \
-        OBJDUMP=llvm-objdump \
-        READELF=llvm-readelf \
-        CROSS_COMPILE=${ARM64} \
-        CROSS_COMPILE_COMPAT=${ARM32} \
-        CROSS_COMPILE_ARM32=${ARM32} 2>&1 | tee "${KERNEL_LOG}"
-
+    
     if [[ -f "$KERNEL_IMG" ]]; then
         msg "* Compile Kernel for $DEVICE successfully."
     else

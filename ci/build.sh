@@ -19,7 +19,7 @@ fi
 # We only run this when it's not running on GitHub Actions
 if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     rm -rf kernel
-    git clone --depth=1 -b "$1" https://github.com/a3-Prjkt/kernel_xiaomi_ginkgo_consistenX kernel
+    git clone --depth=1 -b "$1" https://github.com/XSans0/kernel_xiaomi_vayu kernel
     cd kernel || exit
 fi
 
@@ -66,7 +66,7 @@ KERNEL_DTBO="$KERNEL_DIR/out/arch/arm64/boot/dtbo.img"
 KERNEL_DTB="$KERNEL_DIR/out/arch/arm64/boot/dts/qcom/sm8150-v2.dtb"
 KERNEL_LOG="$KERNEL_DIR/out/log-$(TZ=Asia/Jakarta date +'%H%M').txt"
 AK3_DIR="$KERNEL_DIR/AK3"
-DEVICE="ginkgo"
+DEVICE="vayu"
 CORES="$(nproc --all)"
 CPU="$(lscpu | sed -nr '/Model name/ s/.*:\s*(.*) */\1/p')"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -153,7 +153,7 @@ msg "* Start Compile kernel for $DEVICE using $CPU $CORES thread"
 start_msg
 
 if [[ "${COMPILE}" == "clang" ]]; then
-    make O=out vendor/ginkgo-perf_defconfig
+    make O=out "$DEVICE"_defconfig
     make -j"$CORES" O=out \
         CC="${PrefixDir}"clang \
         LD="${PrefixDir}"ld.lld \

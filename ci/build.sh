@@ -19,13 +19,13 @@ fi
 # We only run this when it's not running on GitHub Actions
 if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     rm -rf kernel
-    git clone --depth=1 -b "$1" https://github.com/stormbreaker-project/kernel_xiaomi_ginkgo kernel
+    git clone --depth=1 -b "$1" https://github.com/XSans0/kernel_xiaomi_vayu kernel
     cd kernel || exit
 fi
 
 # Clone AnyKernel3 source
 msg "* Clone AnyKernel3 source"
-git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
+git clone --depth=1 -b master https://github.com/ryz-code/AnyKernel3 AK3
 
 # Clone toolchain source
 if [[ "${TC}" == "aosp15" ]]; then
@@ -107,8 +107,8 @@ fi
 export TZ="Asia/Jakarta"
 export ARCH="arm64"
 export SUBARCH="arm64"
-export KBUILD_BUILD_USER="XSansツ"
-export KBUILD_BUILD_HOST="Wibu-Server"
+export KBUILD_BUILD_USER="ryzXD.ツ"
+export KBUILD_BUILD_HOST="Ryz-Server"
 export BOT_MSG_URL="https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
 export BOT_BUILD_URL="https://api.telegram.org/bot$BOT_TOKEN/sendDocument"
 export PATH
@@ -224,7 +224,7 @@ fi
 cd "$AK3_DIR" || exit
 ZIP_DATE="$(TZ=Asia/Jakarta date +'%Y%m%d')"
 ZIP_DATE2="$(TZ=Asia/Jakarta date +'%H%M')"
-ZIP_NAME=["$ZIP_DATE"]WeebX-Personal-"$ZIP_DATE2".zip
+ZIP_NAME=["$ZIP_DATE"]Ryz-Personal-"$ZIP_DATE2".zip
 zip -r9 "$ZIP_NAME" ./*
 
 # Upload build

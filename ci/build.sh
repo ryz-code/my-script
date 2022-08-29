@@ -23,41 +23,15 @@ if [[ -z ${GITHUB_ACTIONS:-} ]]; then
     cd kernel || exit
 fi
 
+# Clone toolchain source
+if [[ "${TC}" == "clang" ]]; then
+    msg "* Clone Clang"
+    git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+fi
+
 # Clone AnyKernel3 source
 msg "* Clone AnyKernel3 source"
 git clone --depth=1 -b vayu https://github.com/XSans0/AnyKernel3 AK3
-
-# Clone toolchain source
-if [[ "${TC}" == "aosp15" ]]; then
-    msg "* Clone AOSP Clang 15.x"
-    AOSP_VER="r458507"
-    NEED_GCC=y
-    wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-"${AOSP_VER}".tar.gz -O "aosp-clang.tar.gz"
-    mkdir clang && tar -xf aosp-clang.tar.gz -C clang && rm -rf aosp-clang.tar.gz
-    git clone --depth=1 https://github.com/XSans0/aarch64-linux-android-4.9 arm64
-    git clone --depth=1 https://github.com/XSans0/arm-linux-androideabi-4.9 arm32
-elif [[ "${TC}" == "weebx" ]]; then
-    msg "* Clone WeebX Clang 16.x"
-    wget https://raw.githubusercontent.com/XSans0/WeebX-Clang/main/16.0.0-link.txt -O "link.txt"
-    wget "$(cat link.txt)" -O "weebx-clang.tar.gz"
-    mkdir clang && tar -xf weebx-clang.tar.gz -C clang && rm -rf weebx-clang.tar.gz link.txt
-elif [[ "${TC}" == "weebx15" ]]; then
-    msg "* Clone WeebX Clang 15.x good revision"
-    git clone --depth=1 -b release/15-gr --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
-elif [[ "${TC}" == "weebx14" ]]; then
-    msg "* Clone WeebX Clang 14.x"
-    git clone --depth=1 -b main --depth=1 https://gitlab.com/XSans0/weebx-clang.git clang
-elif [[ "${TC}" == "gcc13" ]]; then
-    msg "* Clone GCC 13.x"
-    GCC=y
-    git clone --depth=1 -b gcc-master https://github.com/mvaisakh/gcc-arm64.git arm64
-    git clone --depth=1 -b gcc-master https://github.com/mvaisakh/gcc-arm.git arm32
-elif [[ "${TC}" == "gcc12" ]]; then
-    msg "* Clone GCC 12.x"
-    GCC=y
-    git clone --depth=1 -b gcc-new https://github.com/mvaisakh/gcc-arm64.git arm64
-    git clone --depth=1 -b gcc-new https://github.com/mvaisakh/gcc-arm.git arm32
-fi
 
 # Setup
 KERNEL_DIR="$PWD"

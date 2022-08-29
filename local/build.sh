@@ -154,10 +154,9 @@ msg "* Total time elapsed: $(("TOTAL_TIME" / 60)) Minutes, $(("TOTAL_TIME" % 60)
 if [[ -f "$KERNEL_IMG" ]] || [[ -f "$KERNEL_DTBO" ]] || [[ -f "$KERNEL_DTB" ]]; then
     cp "$KERNEL_IMG" "$AK3_DIR"
     cp "$KERNEL_DTBO" "$AK3_DIR"
-	cp "$KERNEL_DTB" "$AK3_DIR/dtb.img"
-    msg "* Copy Image, dtbo, dtb successfully"
+    msg "* Copy Image, dtbo, successfully"
 else
-    err "* Copy Image, dtbo, dtb failed!"
+    err "* Copy Image, dtbo, failed!"
     exit
 fi
 
